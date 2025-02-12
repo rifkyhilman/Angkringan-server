@@ -1,5 +1,6 @@
 const express = require('express');
 const connectDB = require('./config/db');
+const authRoutes = require('./routes/auth.routes');
 
 require('dotenv').config();
 
@@ -10,8 +11,7 @@ app.use(express.json());
 connectDB();
 
 // Routes
-app.use('/', (req, res) => {
-    return res.send("Hello Angkringan !");
-});
+app.use('/api/auth', authRoutes);
+
 
 module.exports = app;
