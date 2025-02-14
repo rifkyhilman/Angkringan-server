@@ -28,8 +28,9 @@ exports.login = async (req, res) => {
     // Generate Token
     const token = jwt.sign({ id: user._id, role: user.role.toString() }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES });
 
-
-    res.json({ token });
+    res.status(200).json({ 
+      accesToken: token 
+    });
   } catch (err) {
     res.status(500).json({ message: 'Server Error' });
   }
