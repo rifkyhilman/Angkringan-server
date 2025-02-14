@@ -5,8 +5,15 @@ const User = require('../models/user.model');
 exports.register = async (req, res) => {
   try {
     const { username, email, password } = req.body;
+
+    if (!username || !email || !password) {
+      res
+        .status(400)
+        .json({ error: "Nama, Email atau Password tidak boleh kosong !" });
+      return;
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
-    
     const user = new User({ username, email, password: hashedPassword });
     await user.save();
 
@@ -19,6 +26,14 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
+    
+    if (!email || !password) {
+      res
+        .status(400)
+        .json({ error: "Email atau Password tidak boleh kosong !" });
+      return;
+    }
+    
     const user = await User.findOne({ email });
     if (!user) return res.status(400).json({ message: 'Invalid credentials' });
 
