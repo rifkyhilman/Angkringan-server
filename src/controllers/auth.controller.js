@@ -35,10 +35,10 @@ exports.login = async (req, res) => {
     }
     
     const user = await User.findOne({ email });
-    if (!user) return res.status(400).json({ message: 'Invalid credentials' });
+    if (!user) return res.status(400).json({ message: 'Akun Tidak Terdaftar !' });
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
+    if (!isMatch) return res.status(400).json({ message: 'Password Anda Salah !' });
 
     // Generate Token
     const token = jwt.sign({ id: user._id, username:user.username, role: user.role.toString() }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES });
