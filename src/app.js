@@ -3,6 +3,7 @@ const cors = require("cors");
 const path = require('path');
 const connectDB = require('./config/db');
 const authRoutes = require('./routes/auth.routes');
+const transactionRoutes = require('./routes/transaction.routes');
 
 require('dotenv').config();
 
@@ -14,9 +15,10 @@ app.use(cors());
 connectDB();
 
 // Routes
-app.use('/api/auth', authRoutes);
 app.get ('/', (req, res) => {
    res.sendFile(path.join(__dirname, '../index.html'));
 });
+app.use('/api/auth', authRoutes);
+app.use('/api', transactionRoutes);
 
 module.exports = app;

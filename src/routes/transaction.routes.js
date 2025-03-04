@@ -1,8 +1,8 @@
 const express = require('express');
-const { history } = require('../controllers/transaction.controller');
+const { createTransaction } = require('../controllers/transaction.controller');
 
 const router = express.Router();
 
-router.get('/history', history);
+router.get('/transaction', createTransaction);
 
 module.exports = router;
