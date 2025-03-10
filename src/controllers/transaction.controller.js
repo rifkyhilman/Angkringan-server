@@ -1,16 +1,21 @@
+const Transaction = require('../models/transaction.model');
+const generateInvoiceNumber = require('../utils/generateInvoiceNumber');
+
 exports.createTransaction = async (req, res) => {
-    try {
+    try {  
+      const invoiceNumber = generateInvoiceNumber();
       const {
-        invoiceNumber,
         customerName,
         items,
-        totalPrice
+        cash,
+        totalPrice,
+        cashBack
       } = req.body;
-  
+
       // Validasi input
-      if (!invoiceNumber || !customerName || !items || !totalPrice) {
+      if (!customerName || !items || !totalPrice || !cashBack || !cash) {
         return res.status(400).json({
-          message: 'Invoice number, customer name, items, and total price are required'
+          message: 'customer name, items, cash, cashback and total price are required'
         });
       }
   
@@ -34,11 +39,13 @@ exports.createTransaction = async (req, res) => {
         invoiceNumber,
         customerName,
         items,
-        totalPrice
+        cash,
+        totalPrice,
+        cashBack
       });
   
       // Simpan ke database
-    //   const savedTransaction = await newTransaction.save();
+      const savedTransaction = await newTransaction.save();
   
       res.status(201).json({
         success: true,
