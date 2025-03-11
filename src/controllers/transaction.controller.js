@@ -61,3 +61,23 @@ exports.createTransaction = async (req, res) => {
       });
     }
   };
+
+exports.getAllTransactions = async (req, res) => {
+  try {
+    // Ambil semua data transaksi dan urutkan dari yang terbaru
+    const transactions = await Transaction.find().sort('-createdAt');
+
+    res.json({
+      success: true,
+      count: transactions.length,
+      data: transactions
+    });
+  } catch (error) {
+    console.error('Error getting transactions:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to retrieve transactions',
+      error: error.message
+    });
+  }
+};
