@@ -37,7 +37,7 @@ exports.createTransaction = async (req, res) => {
       // Buat transaksi baru
       const newTransaction = new Transaction({
         invoiceNumber,
-        customerName,
+        customerName, 
         items,
         cash,
         totalPrice,
@@ -69,7 +69,6 @@ exports.getAllTransactions = async (req, res) => {
 
     res.json({
       success: true,
-      count: transactions.length,
       data: transactions
     });
   } catch (error) {
