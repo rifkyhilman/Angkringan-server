@@ -80,3 +80,26 @@ exports.getAllTransactions = async (req, res) => {
     });
   }
 };
+
+exports.getSevenDayTransactions = async (req, res) => {
+  try {
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+    const transactions = await Transaction.find({
+      createdAt: { $gte: sevenDaysAgo, $lte: new Date() }
+    }).sort({ createdAt: -1 }); 
+
+    res.json({
+      success: true,
+      data: transactions
+    });
+  } catch (error) {
+    console.error('Error getting transactions:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to retrieve transactions',
+      error: error.message
+    });
+  }
+}
