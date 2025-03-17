@@ -103,3 +103,29 @@ exports.getSevenDayTransactions = async (req, res) => {
     });
   }
 }
+
+exports.getTodayTransactions = async (req, res) => {
+  try {
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const endOfDay = new Date();
+    endOfDay.setHours(23, 59, 59, 999);
+
+    const transactions = await Transaction.find({
+      createdAt: { $gte: startOfDay, $lte: endOfDay }
+    }).sort({ createdAt: -1 });
+
+    res.json({
+      success: true,
+      data: transactions
+    });
+  } catch (error) {
+    console.error('Error getting transactions:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to retrieve transactions',
+      error: error.message
+    });
+  }
+}
