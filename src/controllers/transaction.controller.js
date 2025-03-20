@@ -107,15 +107,15 @@ exports.getSevenDayTransactions = async (req, res) => {
 exports.getTodayTransactions = async (req, res) => {
   try {
     const now = new Date();
-    
-    const startOfDay = new Date(now);
-    startOfDay.setUTCHours(0, 0, 0, 0);
-    
-    const endOfDay = new Date(now);
-    endOfDay.setUTCHours(23, 59, 59, 999); 
+    const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const endOfDay = new Date(startOfDay);
+    endOfDay.setDate(startOfDay.getDate() + 1);
 
     const transactions = await Transaction.find({
-      createdAt: { $gte: startOfDay, $lte: endOfDay }
+      createdAt: { 
+        $gte: startOfDay, 
+        $lt: endOfDay
+      }
     }).sort({ createdAt: -1 });
 
     res.json({
@@ -130,4 +130,4 @@ exports.getTodayTransactions = async (req, res) => {
       error: error.message
     });
   }
-}
+};
