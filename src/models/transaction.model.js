@@ -42,8 +42,7 @@ const transactionSchema = new mongoose.Schema({
     min: 0
   },
   createdAt: {
-    type: Date,
-    default: Date.now
+    type: Date
   }
   // paymentStatus: {
   //   type: String,

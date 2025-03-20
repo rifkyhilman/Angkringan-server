@@ -1,9 +1,11 @@
 const Transaction = require('../models/transaction.model');
 const generateInvoiceNumber = require('../utils/generateInvoiceNumber');
+const generateCreatedAtLocal = require('../utils/generateCreatedAtLocal');
 
 exports.createTransaction = async (req, res) => {
     try {  
       const invoiceNumber = generateInvoiceNumber();
+      const createdAt = generateCreatedAtLocal();
       const {
         customerName,
         items,
@@ -12,7 +14,6 @@ exports.createTransaction = async (req, res) => {
         cashBack
       } = req.body;
 
-      // Validasi input
       if (!customerName || !items || !totalPrice || !cashBack || !cash) {
         return res.status(400).json({
           message: 'customer name, items, cash, cashback and total price are required'
@@ -25,7 +26,6 @@ exports.createTransaction = async (req, res) => {
         });
       }
   
-      // Validasi setiap item
       for (const item of items) {
         if (!item.name || !item.quantity || !item.price) {
           return res.status(400).json({
@@ -34,17 +34,16 @@ exports.createTransaction = async (req, res) => {
         }
       }
   
-      // Buat transaksi baru
       const newTransaction = new Transaction({
         invoiceNumber,
         customerName, 
         items,
         cash,
         totalPrice,
-        cashBack
+        cashBack,
+        createdAt
       });
   
-      // Simpan ke database
       const savedTransaction = await newTransaction.save();
   
       res.status(201).json({
@@ -64,7 +63,6 @@ exports.createTransaction = async (req, res) => {
 
 exports.getAllTransactions = async (req, res) => {
   try {
-    // Ambil semua data transaksi dan urutkan dari yang terbaru
     const transactions = await Transaction.find().sort('-createdAt');
 
     res.json({
@@ -107,14 +105,24 @@ exports.getSevenDayTransactions = async (req, res) => {
 exports.getTodayTransactions = async (req, res) => {
   try {
     const now = new Date();
-    const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const endOfDay = new Date(startOfDay);
-    endOfDay.setDate(startOfDay.getDate() + 1);
+    const timeZone = "Asia/Jakarta"; 
+    const formatter = new Intl.DateTimeFormat('en-US', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      timeZone
+    });
+
+    const [{ value: month }, , { value: day }, , { value: year }] = formatter.formatToParts(now);
+    const localDateString = `${year}-${month}-${day}`;
+
+    const startOfDayUTC = new Date(`${localDateString}T00:00:00.000Z`);
+    const endOfDayUTC = new Date(`${localDateString}T23:59:59.999Z`);
 
     const transactions = await Transaction.find({
       createdAt: { 
-        $gte: startOfDay, 
-        $lt: endOfDay
+        $gte: startOfDayUTC, 
+        $lte: endOfDayUTC
       }
     }).sort({ createdAt: -1 });
 
