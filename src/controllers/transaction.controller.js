@@ -82,10 +82,26 @@ exports.getAllTransactions = async (req, res) => {
 exports.getSevenDayTransactions = async (req, res) => {
   try {
     const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
+
+    const now = new Date();
+    const timeZone = "Asia/Jakarta"; 
+    const formatter = new Intl.DateTimeFormat('en-US', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      timeZone
+    });
+
+    const [{ value: month }, , { value: day }, , { value: year }] = formatter.formatToParts(now);
+    const localDateString = `${year}-${month}-${day}`;
+    const endOfDayUTC = new Date(`${localDateString}T23:59:59.999Z`);
 
     const transactions = await Transaction.find({
-      createdAt: { $gte: sevenDaysAgo, $lte: new Date() }
+      createdAt: { 
+        $gte: sevenDaysAgo, 
+        $lte: endOfDayUTC 
+      }
     }).sort({ createdAt: -1 }); 
 
     res.json({
