@@ -106,11 +106,13 @@ exports.getSevenDayTransactions = async (req, res) => {
 
 exports.getTodayTransactions = async (req, res) => {
   try {
-    const startOfDay = new Date();
-    startOfDay.setHours(0, 0, 0, 0);
-
-    const endOfDay = new Date();
-    endOfDay.setHours(23, 59, 59, 999);
+    const now = new Date();
+    
+    const startOfDay = new Date(now);
+    startOfDay.setUTCHours(0, 0, 0, 0);
+    
+    const endOfDay = new Date(now);
+    endOfDay.setUTCHours(23, 59, 59, 999); 
 
     const transactions = await Transaction.find({
       createdAt: { $gte: startOfDay, $lte: endOfDay }
