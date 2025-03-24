@@ -1,11 +1,11 @@
 const Transaction = require('../models/transaction.model');
 const generateInvoiceNumber = require('../utils/generateInvoiceNumber');
-const generateCreatedAtLocal = require('../utils/generateCreatedAtLocal');
 
 exports.createTransaction = async (req, res) => {
     try {  
       const invoiceNumber = generateInvoiceNumber();
-      const createdAt = generateCreatedAtLocal();
+      const nowUTC = new Date(); 
+      const nowWIB = new Date(nowUTC.getTime() + 7 * 60 * 60 * 1000);
       const {
         customerName,
         items,
@@ -41,7 +41,7 @@ exports.createTransaction = async (req, res) => {
         cash,
         totalPrice,
         cashBack,
-        createdAt
+        createdAt: nowWIB
       });
   
       const savedTransaction = await newTransaction.save();
@@ -104,7 +104,7 @@ exports.getSevenDayTransactions = async (req, res) => {
       }
     }).sort({ createdAt: -1 }); 
 
-    res.json({
+    res.json({ 
       success: true,
       data: transactions
     });
