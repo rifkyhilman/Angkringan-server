@@ -82,7 +82,7 @@ exports.getAllTransactions = async (req, res) => {
 exports.getSevenDayTransactions = async (req, res) => {
   try {
     const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
     const now = new Date();
     const timeZone = "Asia/Jakarta"; 
