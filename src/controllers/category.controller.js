@@ -32,3 +32,21 @@ exports.createCategory = async (req, res) => {
         });
     };
 };
+
+exports.getAllCategories = async (req, res) => {
+  try {
+    const categories = await Category.find().sort('-createdAt');
+
+    res.json({
+      success: true,
+      data: categories
+    });
+  } catch (error) {
+    console.error('Error getting categories:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to retrieve categories',
+      error: error.message
+    });
+  }
+};
