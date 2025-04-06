@@ -44,7 +44,7 @@ exports.createTransaction = async (req, res) => {
         createdAt: nowWIB
       });
   
-      const savedTransaction = await newTransaction.create();
+      const savedTransaction = await newTransaction.save();
   
       res.status(201).json({
         success: true,

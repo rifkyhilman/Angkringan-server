@@ -17,7 +17,7 @@ exports.createCategory = async (req, res) => {
             pictureURL
         });
   
-        const savedCategory = await newCategory.create();
+        const savedCategory = await newCategory.save();
 
         res.status(200).json({
             success: true,
