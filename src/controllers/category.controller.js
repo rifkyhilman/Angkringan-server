@@ -16,7 +16,7 @@ exports.createCategory = async (req, res) => {
             pictureURL
         });
   
-        const savedCategory = await newCategory.save();
+        const savedCategory = await newCategory.create();
 
         res.status(200).json({
             success: true,
@@ -50,3 +50,11 @@ exports.getAllCategories = async (req, res) => {
     });
   }
 };
+
+exports.deleteCategory = async (req, res) => {
+  try {
+    
+  } catch (error) {
+    
+  }
+}
