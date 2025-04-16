@@ -87,7 +87,6 @@ exports.deleteCategory = async (req, res) => {
       success: false,
       message: 'Failed to deleted categories',
       error: error.message,
-      apiKey:   process.env.CLOUDINARY_API_KEY
     });
   }
 }
