@@ -1,19 +1,21 @@
-const Category = require('../models/category.model');
 const mongoose = require('mongoose');
+const Category = require('../models/category.model');
+const cloudinary = require('../utils/cloudinary');
 
 exports.createCategory = async (req, res) => {
     try {
-        const { categoryName, description, pictureURL} = req.body;
+        const { categoryName, description, publicId, pictureURL} = req.body;
 
-        if(!categoryName || !description || !pictureURL) {
+        if(!categoryName || !description || !publicId || !pictureURL) {
             return res.status(400).json({
-                message: 'categoryName, description, pictureURL are required'
+                message: 'categoryName, description, publicId, pictureURL are required'
               });
         };
 
         const newCategory = new Category({
             categoryName,
             description,
+            publicId,
             pictureURL
         });
   
@@ -58,25 +60,34 @@ exports.deleteCategory = async (req, res) => {
 
       // Validasi ID format MongoDB
       if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(400).json({ message: 'Invalid category ID' });
+        return res.status(400).json({ success: false, message: 'Invalid category ID' });
       }
 
-      const deletedCategory = await Category.findByIdAndDelete(id);
-
-      if (!deletedCategory) {
-        return res.status(404).json({ message: 'Category not found' });
+      const category = await Category.findById(id);
+      if (!category) {
+        return res.status(404).json({ success: false, message: 'Category not found' });
       }
+
+      // Hapus gambar dari Cloudinary (jika ada publicId)
+      if (category.publicId) {
+        await cloudinary.uploader.destroy(category.publicId);
+      }
+
+      // Hapus data dari database
+      await Category.findByIdAndDelete(id);
 
       res.status(200).json({ 
+        success: true,
         message: 'Category deleted successfully',
-        deletedCategory 
+        deletedCategory: category
       });
   } catch (error) {
     console.error('Error getting categories:', error);
     res.status(500).json({
       success: false,
-      message: 'Failed to retrieve categories',
-      error: error.message
+      message: 'Failed to deleted categories',
+      error: error.message,
+      apiKey:   process.env.CLOUDINARY_API_KEY
     });
   }
 }

@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require("cors");
 const path = require('path');
@@ -8,8 +9,6 @@ const authRoutes = require('./routes/auth.routes');
 const transactionRoutes = require('./routes/transaction.routes');
 const masterDataRoutes = require('./routes/masterData.routes');
 const authMiddleware = require('./middleware/auth.middleware');
-
-require('dotenv').config();
 
 const app = express();
 app.use(express.json());
