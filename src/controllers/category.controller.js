@@ -40,6 +40,13 @@ exports.getAllCategories = async (req, res) => {
   try {
     const categories = await Category.find().sort('-createdAt');
 
+    if (!categories) {
+      return res.status(404).json({
+        success: false,
+        message: 'Category not found',
+      });
+    }
+
     res.json({
       success: true,
       data: categories
@@ -54,8 +61,35 @@ exports.getAllCategories = async (req, res) => {
   }
 };
 
+exports.getCategoryById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const category = await Category.findById(id);
+
+    if (!category) {
+      return res.status(404).json({
+        success: false,
+        message: 'Category not found',
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: category,
+    });
+  } catch (error) {
+    console.error('Error fetching category:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch category',
+      error: error.message,
+    });
+  }
+};
+
 exports.editCategory = async (req, res) => {
   try {
+    const { id } = req.params;
     const { categoryName, description, publicId, pictureURL } = req.body;
 
     if (!categoryName || !description || !publicId || !pictureURL) {
@@ -64,8 +98,12 @@ exports.editCategory = async (req, res) => {
       });
     }
 
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ success: false, message: 'Invalid category ID' });
+    }
+
     const updatedCategory = await Category.findByIdAndUpdate(
-      req.params.id,
+      id,
       {
         categoryName,
         description,
