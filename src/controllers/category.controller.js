@@ -54,6 +54,49 @@ exports.getAllCategories = async (req, res) => {
   }
 };
 
+exports.editCategory = async (req, res) => {
+  try {
+    const { categoryName, description, publicId, pictureURL } = req.body;
+
+    if (!categoryName || !description || !publicId || !pictureURL) {
+      return res.status(400).json({
+        message: 'categoryName, description, publicId, pictureURL are required',
+      });
+    }
+
+    const updatedCategory = await Category.findByIdAndUpdate(
+      req.params.id,
+      {
+        categoryName,
+        description,
+        publicId,
+        pictureURL,
+      },
+      { new: true }
+    );
+
+    if (!updatedCategory) {
+      return res.status(404).json({
+        success: false,
+        message: 'Category not found',
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Category updated successfully',
+      data: updatedCategory,
+    });
+  } catch (error) {
+    console.error('Error updating category:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to update category',
+      error: error.message,
+    });
+  }
+};
+
 exports.deleteCategory = async (req, res) => {
   try {
       const { id } = req.params;
@@ -88,5 +131,5 @@ exports.deleteCategory = async (req, res) => {
       message: 'Failed to deleted categories',
       error: error.message,
     });
-  }
-}
+  };
+};
