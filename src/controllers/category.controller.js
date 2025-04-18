@@ -97,15 +97,11 @@ exports.editCategory = async (req, res) => {
     const { id } = req.params;
     const { categoryName, description, publicId, pictureURL } = req.body;
 
-    if (!categoryName || !description || !publicId || !pictureURL) {
-      return res.status(400).json({
-        message: 'categoryName, description, publicId, pictureURL are required',
-      });
-    }
-
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ success: false, message: 'Invalid category ID' });
     }
+    
+    const category = await Category.findById(id);
 
     const updatedCategory = await Category.findByIdAndUpdate(
       id,
@@ -117,6 +113,11 @@ exports.editCategory = async (req, res) => {
       },
       { new: true }
     );
+
+    // Hapus gambar lama dari Cloudinary jika publicId berubah
+    if (updatedCategory.publicId !== category.publicId) {
+      await cloudinary.uploader.destroy(category.publicId);
+    }
 
     if (!updatedCategory) {
       return res.status(404).json({
